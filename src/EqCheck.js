@@ -7,9 +7,10 @@ import { fetchOpenAIResponse } from './Openai';
  * Runs EQ check, building evaluation prompt.
  * Use "cold" temperature for evaluation tasks to get more stable results each time
  * @param {string} text
+ * @param {string} key - openai key
  * @returns Array
  */
-export async function eqCheck(text) {
+export async function eqCheck(text, key) {
     const prompt = buildEvaluationPrompt(text, {outputFormat: getKeyValueLLMinstructions('characteristic name')})
     const words = prompt.split(' ').filter(t => !!t).length
     if (words > MAX_WORDS[OPEN_AI_MODEL_DEF_MODEL]) {
@@ -19,8 +20,14 @@ export async function eqCheck(text) {
     const evalResp = await fetchOpenAIResponse(null, [{content: prompt, role: 'user'}], {
         stream: false,
         model: OPEN_AI_MODEL_DEF_MODEL,
-        temperature: 0
+        temperature: 0,
+        key: key
     })
+
+    if (!evalResp) {
+        alert(`Unknown error. See console for details.`)
+        return;
+    }
 
     // Format the output
     // Note: many formatting libraries already are being developed (they are also unstable often), but keep code simple for 1st version
@@ -42,13 +49,15 @@ export async function eqCheck(text) {
  * Returns suggested text version fixing all 'errors'. Add temperature variability
  *
  * @param {string} text
+ * @param {string} key - openai key
  * @returns {string}
  */
-export async function eqSuggestion(text) {
+export async function eqSuggestion(text, key) {
     const prompt = `Rewrite the following text concisely, correctly, respectfully, thoughtfully: "${text}"`;
     return await fetchOpenAIResponse(null, [{content: prompt, role: 'user'}], {
         stream: false,
         model: OPEN_AI_MODEL_DEF_MODEL,
-        temperature: 1
+        temperature: 1,
+        key: key
     })
 }

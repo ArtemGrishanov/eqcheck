@@ -1,4 +1,4 @@
-import { COMPLETION_API, OPEN_AI_KEY, OPEN_AI_MODEL_DEF_MODEL } from './Config';
+import { COMPLETION_API, OPEN_AI_KEY_BODY, OPEN_AI_MODEL_DEF_MODEL } from './Config';
 
 /**
  * Stream mode controller to avoid two parallel requests
@@ -8,7 +8,7 @@ let controller
 /**
  * Basic method to communicate with openai
  */
-export async function fetchOpenAIResponse(callback, messages, options = {stream: true, model: OPEN_AI_MODEL_DEF_MODEL, temperature: 1}) {
+export async function fetchOpenAIResponse(callback, messages, options = {stream: true, model: OPEN_AI_MODEL_DEF_MODEL, temperature: 1, key: OPEN_AI_KEY_BODY}) {
     try {
         if (controller && controller.signal.aborted !== true) {
             // avoid two parallel openai requests
@@ -21,9 +21,9 @@ export async function fetchOpenAIResponse(callback, messages, options = {stream:
             "Accept": "text/event-stream"
         }
 
-        if (OPEN_AI_KEY && COMPLETION_API.indexOf('api.openai.com') >= 0) {
+        if (options.key && COMPLETION_API.indexOf('api.openai.com') >= 0) {
             // for direct openai calls only
-            headers['Authorization'] = `Bearer ${OPEN_AI_KEY}`
+            headers['Authorization'] = `Bearer ${!options.key.startsWith('sk-') ? `sk-${options.key}`: options.key}`
         }
 
         const response = await fetch(COMPLETION_API, {

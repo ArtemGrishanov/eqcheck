@@ -1,6 +1,6 @@
 export const OPEN_AI_MODEL_DEF_MODEL = 'gpt-4'
 
-export const OPEN_AI_KEY = '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'
+export const OPEN_AI_KEY_BODY = /*sk-*/'mJF254HKKkOyyx0YWtYpT3BlbkFJxUsbsEUFe94LaJHnlXB2'
 
 export const COMPLETION_API = 'https://api.openai.com/v1/chat/completions'
 

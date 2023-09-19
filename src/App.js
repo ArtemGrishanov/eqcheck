@@ -1,28 +1,32 @@
+import { useState } from 'react';
 import "./App.css";
 import { Input } from "./Input";
-import { useState } from 'react';
 import { eqCheck, eqSuggestion } from './EqCheck';
 import { getColor } from './Characteristics';
+import { OPEN_AI_KEY_BODY } from './Config';
 
 function App() {
 
     const [evaluation, setEvaluation] = useState([])
     const [suggestion, setSuggestion] = useState('')
     const [inProgress, setInProgress] = useState(false)
+    const [key, setKey] = useState('sk-'+OPEN_AI_KEY_BODY);
 
     const onSend = async (value) => {
         setInProgress(true)
-        const respEq = await eqCheck(value)
-        setEvaluation(respEq
-            .sort((a, b) => b.value - a.value)
-            .map(r => {
-            return {
-                ...r,
-                backgroundColor: getColor(r.key, r.value)
-            }
-        }))
-        const respSuggestion = await eqSuggestion(value)
-        setSuggestion(respSuggestion)
+        const respEq = await eqCheck(value, key)
+        if (respEq) {
+            setEvaluation(respEq
+                .sort((a, b) => b.value - a.value)
+                .map(r => {
+                return {
+                    ...r,
+                    backgroundColor: getColor(r.key, r.value)
+                }
+            }))
+            const respSuggestion = await eqSuggestion(value, key)
+            setSuggestion(respSuggestion)
+        }
         setInProgress(false)
     }
 
@@ -35,8 +39,12 @@ function App() {
         <div className="App">
             <div>
                 <h2>EQ Check</h2>
-                <span>This app extracts text characteristics using ChatGPR LLM. </span>
-                <span>Inspired by <a href="https://www.caura.co/eq-check/" target="_blank" rel="noopener noreferrer">Caura</a> project</span>
+                <span>This app extracts text characteristics using ChatGPR LLM. </span><br/>
+                <span>Inspired by <a href="https://www.caura.co/eq-check/" target="_blank" rel="noopener noreferrer">Caura</a> project</span><br/>
+                <span>It prints text characteristics after analysis with weight in range 1-10</span>
+            </div>
+            <div>
+                <p>OpenAI API Key: <input value={key} onInput={e => setKey(e.target.value)}/></p>
             </div>
             <div>
                 <p>Enter the text to be evaluated</p>

@@ -11,7 +11,7 @@
 export const parseKeyValueText = (text) => {
     const lines = text.split('\n').filter(l => !!l)
     const result = lines.map(l => {
-        const match = new RegExp(/^([A-z\s]+):[\s+]?([0-9]+)$/, 'ig').exec(l)
+        const match = new RegExp(/^([A-z\s-_]+):[\s+]?([0-9]+)$/, 'ig').exec(l)
         if (match[1] && match[2]) {
             return {key: match[1], value: match[2]}
         }

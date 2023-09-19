@@ -88,7 +88,7 @@ export const buildEvaluationPrompt = (text, options = {outputFormat: ''}) => {
     const prompt = `
         Here are examples of detecting emotional IQ characteristics from the text and assigning a value from 1 to 10 depending on how strong this characteristic is in the text.
         ${examples}
-        Your must extract the following characteristics and their values from 1 to 10 only: ${cnames.join(',')}.
+        Your must extract the following characteristics only: "${cnames.join(',')}". And their values. Do not add other characteristics, do not remove any of these.
         ${options.outputFormat}
         Now extract the following emotional IQ characteristics from text: "${text}"`
 
